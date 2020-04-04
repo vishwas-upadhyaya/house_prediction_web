@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>House Prediction</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body>
+<form id="predict-form">
+
+    <h2>Area(Square foot)</h2>
+    <input name="sqft" type="number">
+    <h2>BHK</h2>
+    <div>
+        <input type="radio" id="radio-1" name="bhk" value="1">
+        <label for="radio-1">1</label>
+        <input type="radio" id="radio-2" name="bhk" value="2">
+        <label for="radio-2">2</label>
+        <input type="radio" id="radio-3" name="bhk" value="3">
+        <label for="radio-3">3</label>
+        <input type="radio" id="radio-4" name="bhk" value="4">
+        <label for="radio-4">4</label>
+        <input type="radio" id="radio-5" name="bhk" value="5">
+        <label for="radio-5">5</label>
+    </div>
+    <h2>Bathroom</h2>
+    <div>
+        <input type="radio" id="bath-1" name="bath" value="1">
+        <label for="bath-1">1</label>
+        <input type="radio" id="bath-2" name="bath" value="2">
+        <label for="bath-2">2</label>
+        <input type="radio" id="bath-3" name="bath" value="3">
+        <label for="bath-3">3</label>
+        <input type="radio" id="bath-4" name="bath" value="4">
+        <label for="bath-4">4</label>
+        <input type="radio" id="bath-5" name="bath" value="5">
+        <label for="bath-5">5</label>
+    </div>
+    <h2>Location</h2>
+    <select name="location" class="locations">
+        <option value="" disabled="disabled" selected="selected">choose a location</option>
+        <option>Electronic city</option>
+        <option>Rajaji Nagar</option>
+    </select>
+
+</form>
+<button id="button-1">Estimate price</button>
+<h2 class="est-price"></h2>
+<script>
+$('#button-1').click(function(){
+    var x = $("form").serializeArray();
+    console.log(x[0]['value'])
+    var sqft=x[0]['value']
+    var bhk=x[1]['value']
+    var bath=x[2]['value']
+    var location=x[3]['value']
+    console.log(location)
+    $.ajax({
+
+                                            url: '{% url "estimate" %}',
+                                            data: {
+                                                'sqfts':sqft,
+                                                'bhks':bhk,
+                                                'baths':bath,
+                                                'locations':location
+                                            },
+                                            dataType: 'json',
+                                                success: function (data) {
+                                                   console.log(data['a'])
+                                                   $('.est-price').text(data['a']+' lakhs')
+                                            }
+                                        });
+});
+</script>
+<script>
+    $.ajax({
+
+                                            url: '{% url "locations" %}',
+                                            data: {
+                                                'ids':'767gy767gb'
+                                            },
+                                            dataType: 'json',
+                                                success: function (data) {
+                                                   //console.log(data)
+                                                   var cells="<option value='' disabled='disabled' selected='selected'>choose a location</option>";
+                                                   for(i in data['location']){
+                                                        //console.log(data['location'][i])
+                                                        cells+="<option>"+data['location'][i]+"</option>"
+                                                   }
+                                                   document.getElementsByClassName("locations")[0].innerHTML=cells;
+                                            }
+                                        });
+</script>
+</body>
+</html>
